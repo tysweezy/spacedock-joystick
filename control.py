@@ -44,6 +44,15 @@ def draw_aim(renderer, rect) -> None:
     sdl2.SDL_RenderPresent(renderer)
 
 
+def spawn_moving_object(renderer) -> None:
+    loc = { 'x': 10, 'y': 10, 'w': 50, 'h': 50 }
+
+    rect = sdl2.SDL_Rect(**loc)
+    sdl2.SDL_RenderClear(renderer)
+    sdl2.SDL_SetRenderDrawColor(renderer, 200, 0, 0, 255)
+    sdl2.SDL_RenderDrawRect(renderer, rect)
+    sdl2.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255)
+    sdl2.SDL_RenderPresent(renderer)
 
 def spawn_falling_objects(renderer) -> None:
     for _ in range(FALLING_OBJECT_COUNT):
@@ -118,7 +127,8 @@ def run() -> None:
                 poll_aim(event.jaxis, cursor)
                 print(f'{event.jaxis.axis}:  {event.jaxis.value}')
         draw_aim(renderer, cursor)
-        spawn_falling_objects(renderer)
+        # spawn_falling_objects(renderer)
+        spawn_moving_object(renderer)
 
 
 if __name__ == "__main__":
