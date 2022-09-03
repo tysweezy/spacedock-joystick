@@ -1,3 +1,4 @@
+from random import randrange
 import sys
 import ctypes
 import sdl2
@@ -12,6 +13,9 @@ AIM_DETILS = {
 
 JOYSTICK_DEADZONE = 8000
 
+FALLING_OBJECT_COUNT = 20
+
+
 def poll_aim(jaxis, rect) -> None:
     if jaxis.which == 0:
         if jaxis.axis == 0:
@@ -21,7 +25,7 @@ def poll_aim(jaxis, rect) -> None:
             elif jaxis.value > JOYSTICK_DEADZONE:
                 rect.x += 10
             else:
-                rect.x = 400 
+                rect.x = 400
         elif jaxis.axis == 1:
             # y-axis rotation
             if jaxis.value < -JOYSTICK_DEADZONE:
@@ -41,10 +45,28 @@ def draw_aim(renderer, rect) -> None:
 
 
 
+def spawn_falling_objects(renderer) -> None:
+    for _ in range(FALLING_OBJECT_COUNT):
+        loc = { 
+            'x': randrange(0, 800), 
+            'y': randrange(0, 600),
+            'w': 5,
+            'h': 5,
+        }
+
+        rect = sdl2.SDL_Rect(**loc)
+        sdl2.SDL_SetRenderDrawColor(renderer, 200, 0, 0, 255)
+        sdl2.SDL_RenderDrawRect(renderer, rect)
+        sdl2.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255)
+        sdl2.SDL_RenderPresent(renderer)
+
+        print(f'enemy drawn: {loc}')
+
+
 def run() -> None:
     sdl2.SDL_Init(sdl2.SDL_INIT_JOYSTICK)
 
-    joystick = sdl2.SDL_JoystickOpen(0)
+    sdl2.SDL_JoystickOpen(0)
 
     if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) != 0:
         print(sdl2.SDL_GetError())
@@ -72,7 +94,7 @@ def run() -> None:
         print(sdl2.SDL_JoystickName(j))
     """
 
-    cursor = sdl2.SDL_Rect(**AIM_DETILS) 
+    cursor = sdl2.SDL_Rect(**AIM_DETILS)
 
     event = sdl2.SDL_Event()
     running = True
@@ -96,7 +118,8 @@ def run() -> None:
                 poll_aim(event.jaxis, cursor)
                 print(f'{event.jaxis.axis}:  {event.jaxis.value}')
         draw_aim(renderer, cursor)
-        
+        spawn_falling_objects(renderer)
+
 
 if __name__ == "__main__":
     sys.exit(run())
